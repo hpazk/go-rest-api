@@ -4,11 +4,10 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hpazk/go-rest-api/helper"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-type M map[string]interface{}
 
 type User struct {
 	Name     string `json:"name" validate:"required"`
@@ -37,29 +36,42 @@ func main() {
 
 	e.POST("/users", func(c echo.Context) error {
 		user := new(User)
-		if err := c.Validate(user); err != nil {
-			response := M{
-				"code":    400,
-				"status":  "error",
-				"message": err.Error(),
-			}
+		if err := c.Bind(user); err != nil {
+			response := helper.ResponseFormatter(
+				http.StatusBadRequest,
+				"error",
+				err.Error(),
+				nil,
+			)
 			return c.JSON(http.StatusBadRequest, response)
 		}
-		response := M{
-			"code":    201,
-			"status":  "success",
-			"message": "user succesfully registered",
-			"data":    user,
+
+		if err := c.Validate(user); err != nil {
+			response := helper.ResponseFormatter(
+				http.StatusBadRequest,
+				"error",
+				err.Error(),
+				nil,
+			)
+			return c.JSON(http.StatusBadRequest, response)
 		}
+		response := helper.ResponseFormatter(
+			http.StatusCreated,
+			"success",
+			"user succesfully registered",
+			user,
+		)
 
 		return c.JSON(http.StatusCreated, response)
 	})
 
 	e.GET("/users", func(c echo.Context) error {
-		response := M{
-			"code":    200,
-			"message": "success",
-		}
+		response := helper.ResponseFormatter(
+			http.StatusCreated,
+			"success",
+			"user succesfully registered",
+			nil,
+		)
 		return c.JSON(http.StatusOK, response)
 	})
 	e.Logger.Fatal(e.Start(":8080"))
