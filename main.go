@@ -47,14 +47,18 @@ func main() {
 		}
 
 		if err := c.Validate(user); err != nil {
+			errors := helper.ErrorFormatter(err)
+			errMessage := helper.M{"errors": errors}
+
 			response := helper.ResponseFormatter(
 				http.StatusBadRequest,
 				"error",
-				err.Error(),
-				nil,
+				"registering user failed",
+				errMessage,
 			)
 			return c.JSON(http.StatusBadRequest, response)
 		}
+
 		response := helper.ResponseFormatter(
 			http.StatusCreated,
 			"success",
