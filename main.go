@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -10,9 +11,17 @@ import (
 type M map[string]interface{}
 
 type User struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name     string `json:"name" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
 }
 
 func main() {
@@ -22,9 +31,11 @@ func main() {
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
 
+	e.Validator = &CustomValidator{validator: validator.New()}
+
 	e.POST("/users", func(c echo.Context) error {
 		user := new(User)
-		if err := c.Bind(user); err != nil {
+		if err := c.Validate(user); err != nil {
 			response := M{
 				"code":    400,
 				"status":  "error",
