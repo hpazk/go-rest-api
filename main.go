@@ -27,6 +27,8 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 func main() {
 	e := echo.New()
 
+	e.Pre(middleware.RemoveTrailingSlash())
+
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
