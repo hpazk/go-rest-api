@@ -16,6 +16,8 @@ func main() {
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
 
+	e.Pre(middleware.RemoveTrailingSlash())
+
 	e.GET("/users", func(c echo.Context) error {
 		response := M{
 			"code":    200,
