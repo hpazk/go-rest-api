@@ -28,16 +28,5 @@ func main() {
 
 	routes.DefineApiRoutes(e)
 
-	server := echo.New()
-	server.Any("/*", func(c echo.Context) (err error) {
-		req := c.Request()
-		res := c.Response()
-		if req.URL.Path[:4] == "/api" {
-			e.ServeHTTP(res, req)
-		}
-
-		return
-	})
-
-	server.Logger.Fatal(server.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8080"))
 }
