@@ -18,7 +18,7 @@ func NewUserHandler(userService Services) *userHandler {
 }
 
 func (h *userHandler) RegisterUser(c echo.Context) error {
-	req := new(User)
+	req := new(RegisterUserRequest)
 	if err := c.Bind(req); err != nil {
 		response := helper.ResponseFormatter(
 			http.StatusBadRequest,

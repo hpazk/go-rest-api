@@ -1,7 +1,7 @@
 package user
 
 type Services interface {
-	CreateUser(req User) User
+	CreateUser(req RegisterUserRequest) User
 }
 
 type service struct {
@@ -12,7 +12,7 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
-func (s *service) CreateUser(req User) User {
+func (s *service) CreateUser(req RegisterUserRequest) User {
 	user := User{}
 	user.Name = req.Name
 	user.Email = req.Email
