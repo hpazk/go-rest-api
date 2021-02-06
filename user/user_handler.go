@@ -42,12 +42,6 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	// users = append(users, user)
-
-	// userRepository := NewRepository(&UsersStorage{})
-	// userService := NewService(userRepository)
-
-	// newUser := userService.CreateUser(*req)
 	newUser := h.userService.CreateUser(*req)
 
 	userData := UserFormatter(newUser)

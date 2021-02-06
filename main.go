@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/hpazk/go-rest-api/user"
+	"github.com/hpazk/go-rest-api/routes"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -26,11 +26,18 @@ func main() {
 
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	userRepository := user.NewRepository(&user.UsersStorage{})
-	userService := user.NewService(userRepository)
-	userHandler := user.NewUserHandler(userService)
+	routes.DefineApiRoutes(e)
 
-	e.POST("/users", userHandler.RegisterUser)
+	server := echo.New()
+	server.Any("/*", func(c echo.Context) (err error) {
+		req := c.Request()
+		res := c.Response()
+		if req.URL.Path[:4] == "/api" {
+			e.ServeHTTP(res, req)
+		}
 
-	e.Logger.Fatal(e.Start(":8080"))
+		return
+	})
+
+	server.Logger.Fatal(server.Start(":8080"))
 }
