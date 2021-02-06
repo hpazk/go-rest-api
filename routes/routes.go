@@ -12,8 +12,8 @@ func DefineApiRoutes(e *echo.Echo) {
 	}
 
 	var routes []helper.Route
-	for _, controller := range handlers {
-		routes = append(routes, controller.Routes()...)
+	for _, handler := range handlers {
+		routes = append(routes, handler.Routes()...)
 	}
 
 	api := e.Group("/api/v1")

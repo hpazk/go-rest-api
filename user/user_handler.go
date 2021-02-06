@@ -55,3 +55,15 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, response)
 }
+
+func (h *userHandler) GetUser(c echo.Context) error {
+
+	response := helper.ResponseFormatter(
+		http.StatusOK,
+		"success",
+		"login",
+		nil,
+	)
+
+	return c.JSON(http.StatusCreated, response)
+}

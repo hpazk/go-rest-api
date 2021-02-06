@@ -7,7 +7,7 @@ import (
 
 type UserRoutes struct{}
 
-func (controller UserRoutes) Routes() []helper.Route {
+func (r UserRoutes) Routes() []helper.Route {
 	userRepository := NewRepository(&UsersStorage{})
 	userService := NewService(userRepository)
 	userHandler := NewUserHandler(userService)
@@ -17,6 +17,11 @@ func (controller UserRoutes) Routes() []helper.Route {
 			Method:  echo.POST,
 			Path:    "/users",
 			Handler: userHandler.RegisterUser,
+		},
+		{
+			Method:  echo.GET,
+			Path:    "/users",
+			Handler: userHandler.GetUser,
 		},
 	}
 }
