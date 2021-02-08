@@ -7,8 +7,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-// var instance *gorm.DB
-
 func GetInstance() *gorm.DB {
 	dsn := "host=localhost user=postgres password= dbname=jersey_dev port=5432 sslmode=disable"
 
@@ -19,6 +17,4 @@ func GetInstance() *gorm.DB {
 	}
 
 	return db
-
-	// return instance
 }
