@@ -5,7 +5,8 @@ import (
 )
 
 type Repository interface {
-	Create(user User) (User, error)
+	InsertUser(user User) (User, error)
+	FindEmail(email string) *User
 }
 
 type repository struct {
@@ -16,11 +17,21 @@ func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) Create(user User) (User, error) {
+func (r *repository) InsertUser(user User) (User, error) {
 	err := r.db.Create(&user).Error
 	if err != nil {
 		return user, err
 	}
 
 	return user, nil
+}
+
+func (r *repository) FindEmail(email string) *User {
+	var user User
+
+	err := r.db.First(&user, "email = ?", email).Error
+	if err == nil {
+		return &user
+	}
+	return nil
 }

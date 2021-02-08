@@ -1,10 +1,10 @@
 package user
 
-import "gorm.io/gorm"
+import "github.com/hpazk/go-rest-api/helper"
 
 // struct yang berhubungan dengan database
 type User struct {
-	gorm.Model
+	helper.BaseModel
 	Name     string
 	Email    string
 	Password string

@@ -42,6 +42,18 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
+	existEmail := h.userService.CheckExistEmail(*req)
+
+	if existEmail != nil {
+		response := helper.ResponseFormatter(
+			http.StatusBadRequest,
+			"error",
+			existEmail.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	newUser, err := h.userService.CreateUser(*req)
 	if err != nil {
 		response := helper.ResponseFormatter(
