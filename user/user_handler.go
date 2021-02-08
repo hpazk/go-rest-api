@@ -42,7 +42,16 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	newUser := h.userService.CreateUser(*req)
+	newUser, err := h.userService.CreateUser(*req)
+	if err != nil {
+		response := helper.ResponseFormatter(
+			http.StatusInternalServerError,
+			"error",
+			"failed save to database",
+			err.Error(),
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
 
 	userData := UserFormatter(newUser)
 

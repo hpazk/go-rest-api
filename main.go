@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/hpazk/go-rest-api/database"
 	"github.com/hpazk/go-rest-api/routes"
+	"github.com/hpazk/go-rest-api/user"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -17,6 +19,10 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 
 func main() {
 	e := echo.New()
+
+	db := database.GetInstance()
+
+	db.AutoMigrate(user.User{})
 
 	e.Pre(middleware.RemoveTrailingSlash())
 

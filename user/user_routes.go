@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/hpazk/go-rest-api/database"
 	"github.com/hpazk/go-rest-api/helper"
 	"github.com/labstack/echo/v4"
 )
@@ -8,7 +9,9 @@ import (
 type UserRoutes struct{}
 
 func (r UserRoutes) Routes() []helper.Route {
-	userRepository := NewRepository(&UsersStorage{})
+	db := database.GetInstance()
+
+	userRepository := NewRepository(db)
 	userService := NewService(userRepository)
 	userHandler := NewUserHandler(userService)
 
