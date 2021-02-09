@@ -22,9 +22,9 @@ func (r UserRoutes) Routes() []helper.Route {
 			Handler: userHandler.RegisterUser,
 		},
 		{
-			Method:  echo.GET,
-			Path:    "/users",
-			Handler: userHandler.GetUser,
+			Method:  echo.POST,
+			Path:    "/login",
+			Handler: userHandler.LoginUser,
 		},
 	}
 }

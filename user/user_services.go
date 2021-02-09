@@ -9,6 +9,7 @@ import (
 type Services interface {
 	CreateUser(req RegisterUserRequest) (User, error)
 	CheckExistEmail(req RegisterUserRequest) error
+	AuthUser(req LoginUserRequest) (User, error)
 }
 
 type service struct {
@@ -24,12 +25,12 @@ func (s *service) CreateUser(req RegisterUserRequest) (User, error) {
 	user.Name = req.Name
 	user.Email = req.Email
 
-	passwordHashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.MinCost)
 	if err != nil {
 		return user, err
 	}
 
-	user.Password = string(passwordHashed)
+	user.Password = string(hashedPassword)
 
 	newUser, err := s.repository.InsertUser(user)
 	if err != nil {
@@ -42,9 +43,28 @@ func (s *service) CreateUser(req RegisterUserRequest) (User, error) {
 func (s *service) CheckExistEmail(req RegisterUserRequest) error {
 	email := req.Email
 
-	if user := s.repository.FindEmail(email); user != nil {
-		return errors.New("email already regietered")
+	if existUser := s.repository.FindByEmail(email); existUser != nil {
+		return errors.New("email already registered")
 	}
 
 	return nil
+}
+
+func (s *service) AuthUser(req LoginUserRequest) (User, error) {
+	email := req.Email
+	password := req.Password
+
+	// var user User
+
+	user, err := s.repository.FindUserByEmail(email)
+	if err != nil {
+		return user, errors.New("email not registered")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return user, errors.New("invalid email or password")
+	}
+
+	return user, nil
 }

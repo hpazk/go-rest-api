@@ -6,7 +6,8 @@ import (
 
 type Repository interface {
 	InsertUser(user User) (User, error)
-	FindEmail(email string) *User
+	FindByEmail(email string) *User
+	FindUserByEmail(email string) (User, error)
 }
 
 type repository struct {
@@ -26,7 +27,7 @@ func (r *repository) InsertUser(user User) (User, error) {
 	return user, nil
 }
 
-func (r *repository) FindEmail(email string) *User {
+func (r *repository) FindByEmail(email string) *User {
 	var user User
 
 	err := r.db.First(&user, "email = ?", email).Error
@@ -34,4 +35,15 @@ func (r *repository) FindEmail(email string) *User {
 		return &user
 	}
 	return nil
+}
+
+func (r *repository) FindUserByEmail(email string) (User, error) {
+	var user User
+
+	err := r.db.Where("email = ?", email).Find(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }

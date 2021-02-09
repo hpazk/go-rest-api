@@ -36,8 +36,8 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 		response := helper.ResponseFormatter(
 			http.StatusBadRequest,
 			"error",
-			"registering user failed",
 			errMessage,
+			nil,
 		)
 		return c.JSON(http.StatusBadRequest, response)
 	}
@@ -59,8 +59,8 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 		response := helper.ResponseFormatter(
 			http.StatusInternalServerError,
 			"error",
-			"failed save to database",
 			err.Error(),
+			nil,
 		)
 		return c.JSON(http.StatusInternalServerError, response)
 	}
@@ -87,4 +87,58 @@ func (h *userHandler) GetUser(c echo.Context) error {
 	)
 
 	return c.JSON(http.StatusCreated, response)
+}
+
+func (h *userHandler) LoginUser(c echo.Context) error {
+	req := new(LoginUserRequest)
+	if err := c.Bind(req); err != nil {
+		response := helper.ResponseFormatter(
+			http.StatusBadRequest,
+			"error",
+			err.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	if err := c.Validate(req); err != nil {
+		errors := helper.ErrorFormatter(err)
+		errMessage := helper.M{"errors": errors}
+
+		response := helper.ResponseFormatter(
+			http.StatusBadRequest,
+			"error",
+			errMessage,
+			nil,
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	userAuth, err := h.userService.AuthUser(*req)
+	if err != nil {
+		// errors := helper.ErrorFormatter(err)
+		// errMessage := helper.M{"errors": errors}
+
+		response := helper.ResponseFormatter(
+			http.StatusUnauthorized,
+			"error",
+			err.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusUnauthorized, response)
+	}
+
+	userData := UserFormatter(userAuth)
+
+	response := helper.ResponseFormatter(
+		http.StatusOK,
+		"success",
+		"user authenticated",
+		userData,
+	)
+
+	// return c.JSON(http.StatusCreated, response)
+
+	return c.JSON(http.StatusOK, response)
+
 }
