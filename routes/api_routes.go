@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"github.com/hpazk/go-rest-api/app/user"
 	"github.com/hpazk/go-rest-api/helper"
-	"github.com/hpazk/go-rest-api/user"
 	"github.com/labstack/echo/v4"
 )
 
