@@ -1,8 +1,10 @@
 package user
 
 import (
+	"github.com/hpazk/go-rest-api/auth"
 	"github.com/hpazk/go-rest-api/database"
 	"github.com/hpazk/go-rest-api/helper"
+	"github.com/hpazk/go-rest-api/middleware"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,7 +15,9 @@ func (r UserRoutes) Routes() []helper.Route {
 
 	userRepository := NewRepository(db)
 	userService := NewService(userRepository)
-	userHandler := NewUserHandler(userService)
+	authService := auth.NewService()
+
+	userHandler := NewUserHandler(userService, authService)
 
 	return []helper.Route{
 		{
@@ -25,6 +29,12 @@ func (r UserRoutes) Routes() []helper.Route {
 			Method:  echo.POST,
 			Path:    "/login",
 			Handler: userHandler.LoginUser,
+		},
+		{
+			Method:     echo.GET,
+			Path:       "/users",
+			Handler:    userHandler.GetUser,
+			Middleware: []echo.MiddlewareFunc{middleware.JwtMiddleWare()},
 		},
 	}
 }

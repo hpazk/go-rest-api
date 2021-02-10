@@ -5,16 +5,18 @@ import (
 
 	"net/http"
 
+	"github.com/hpazk/go-rest-api/auth"
 	"github.com/hpazk/go-rest-api/helper"
 	"github.com/labstack/echo/v4"
 )
 
 type userHandler struct {
 	userService Services
+	authService auth.Service
 }
 
-func NewUserHandler(userService Services) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService Services, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c echo.Context) error {
@@ -65,7 +67,17 @@ func (h *userHandler) RegisterUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response)
 	}
 
-	userData := UserFormatter(newUser)
+	auth_token, err := h.authService.GetAccessToken(newUser.ID)
+	if err != nil {
+		response := helper.ResponseFormatter(
+			http.StatusInternalServerError,
+			"error",
+			err.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+	userData := UserFormatter(newUser, auth_token)
 
 	response := helper.ResponseFormatter(
 		http.StatusCreated,
@@ -82,11 +94,11 @@ func (h *userHandler) GetUser(c echo.Context) error {
 	response := helper.ResponseFormatter(
 		http.StatusOK,
 		"success",
-		"login",
+		"get user",
 		nil,
 	)
 
-	return c.JSON(http.StatusCreated, response)
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h *userHandler) LoginUser(c echo.Context) error {
@@ -128,7 +140,18 @@ func (h *userHandler) LoginUser(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, response)
 	}
 
-	userData := UserFormatter(userAuth)
+	auth_token, err := h.authService.GetAccessToken(userAuth.ID)
+	if err != nil {
+		response := helper.ResponseFormatter(
+			http.StatusInternalServerError,
+			"error",
+			err.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusInternalServerError, response)
+	}
+
+	userData := UserFormatter(userAuth, auth_token)
 
 	response := helper.ResponseFormatter(
 		http.StatusOK,
