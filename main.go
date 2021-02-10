@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/hpazk/go-rest-api/app/user"
 	"github.com/hpazk/go-rest-api/database"
 	"github.com/hpazk/go-rest-api/routes"
-	"github.com/hpazk/go-rest-api/user"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
