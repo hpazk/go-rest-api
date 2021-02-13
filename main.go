@@ -1,10 +1,14 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/hpazk/go-rest-api/app/user"
 	"github.com/hpazk/go-rest-api/database"
 	"github.com/hpazk/go-rest-api/routes"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -18,6 +22,11 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	e := echo.New()
 
 	db := database.GetInstance()
@@ -34,5 +43,5 @@ func main() {
 
 	routes.DefineApiRoutes(e)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
